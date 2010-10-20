@@ -1,4 +1,4 @@
-package net.refractions.udig.catalog.neo4j;
+package eu.udig.catalog.neo4j;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;

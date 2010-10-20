@@ -4,8 +4,8 @@
    <extension
          point="net.refractions.udig.catalog.ServiceExtension">
       <service
-            class="net.refractions.udig.catalog.neo4j.Neo4jSpatialServiceExtension"
-            id="net.refractions.udig.catalog.neo4j.spatial.service">
+            class="eu.udig.catalog.neo4j.Neo4jSpatialServiceExtension"
+            id="eu.udig.catalog.neo4j.spatial.service">
       </service>
    </extension>
    <extension
@@ -18,62 +18,62 @@
    <extension
          point="org.eclipse.ui.importWizards">
       <wizard
-            class="net.refractions.udig.catalog.neo4j.shpwizard.ShpImportWizard"
+            class="eu.udig.catalog.neo4j.shpwizard.ShpImportWizard"
             icon="icons/obj16/worldimage_obj.gif"
-            id="net.refractions.udig.catalog.neo4j.shpwizard"
+            id="eu.udig.catalog.neo4j.shpwizard"
             name="Import a SHP file to a Neo4j Database">
       </wizard>
    </extension>
    <extension
          point="net.refractions.udig.ui.operation">
       <operation
-            class="net.refractions.udig.catalog.neo4j.RefreshNeo4jSpatialServiceOp"
+            class="eu.udig.catalog.neo4j.RefreshNeo4jSpatialServiceOp"
             enablesFor="1"
-            id="net.refractions.udig.catalog.neo4j.serviceRefreshOp"
+            id="eu.udig.catalog.neo4j.serviceRefreshOp"
             name="Refresh"
-            targetClass="net.refractions.udig.catalog.neo4j.Neo4jSpatialService">
+            targetClass="eu.udig.catalog.neo4j.Neo4jSpatialService">
          <enablement></enablement>
       </operation>
       <operation
-            class="net.refractions.udig.catalog.neo4j.findpath.GenerateLineStringNetworkOp"
+            class="eu.udig.catalog.neo4j.findpath.GenerateLineStringNetworkOp"
             enablesFor="1"
-            id="net.refractions.udig.catalog.neo4j.generateLineNetworkOp"
+            id="eu.udig.catalog.neo4j.generateLineNetworkOp"
             name="Create Line Network"
-            targetClass="net.refractions.udig.catalog.neo4j.Neo4jSpatialGeoResource">
+            targetClass="eu.udig.catalog.neo4j.Neo4jSpatialGeoResource">
          <enablement></enablement>
       </operation>
       <operation
-            class="net.refractions.udig.catalog.neo4j.DeleteNeo4jSpatialLayerOp"
+            class="eu.udig.catalog.neo4j.DeleteNeo4jSpatialLayerOp"
             enablesFor="1"
-            id="net.refractions.udig.catalog.neo4j.deleteLayerOp"
+            id="eu.udig.catalog.neo4j.deleteLayerOp"
             name="Delete from Database"
-            targetClass="net.refractions.udig.catalog.neo4j.Neo4jSpatialGeoResource">
+            targetClass="eu.udig.catalog.neo4j.Neo4jSpatialGeoResource">
          <enablement></enablement>
       </operation>
    </extension>
    <extension
          point="net.refractions.udig.mapgraphic.mapgraphic">
       <mapGraphic
-            class="net.refractions.udig.catalog.neo4j.findpath.GraphMapGraphic"
+            class="eu.udig.catalog.neo4j.findpath.GraphMapGraphic"
             icon="icons/etool16/path.png"
-            id="net.refractions.udig.catalog.neo4j.mapGraphic"
+            id="eu.udig.catalog.neo4j.mapGraphic"
             name="Neo4j Network">
       </mapGraphic>
    </extension>
    <extension
          point="net.refractions.udig.project.ui.tool">
       <modalTool
-            class="net.refractions.udig.catalog.neo4j.findpath.WayPointTool"
+            class="eu.udig.catalog.neo4j.findpath.WayPointTool"
             icon="icons/etool16/graph.png"
-            id="net.refractions.udig.catalog.neo4j.waypointtool"
+            id="eu.udig.catalog.neo4j.waypointtool"
             name="Add Way Point"
             onToolbar="true"
             tooltip="Add Way Point">
       </modalTool>
       <actionTool
-            class="net.refractions.udig.catalog.neo4j.findpath.FindPathTool"
+            class="eu.udig.catalog.neo4j.findpath.FindPathTool"
             icon="icons/etool16/path.png"
-            id="net.refractions.udig.catalog.neo4j.findpathtool"
+            id="eu.udig.catalog.neo4j.findpathtool"
             name="Find Path"
             onToolbar="true">
          <enablement></enablement>
@@ -81,7 +81,8 @@
    </extension>
    <extension
          point="org.eclipse.ui.startup">
-      <startup></startup>
+      <startup
+            class="eu.udig.catalog.neo4j.Activator"></startup>
    </extension>
 
 </plugin>

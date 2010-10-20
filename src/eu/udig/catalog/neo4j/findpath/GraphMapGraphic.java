@@ -1,10 +1,9 @@
-package net.refractions.udig.catalog.neo4j.findpath;
+package eu.udig.catalog.neo4j.findpath;
 
 import java.awt.Color;
 import java.util.Collections;
 import java.util.List;
 
-import net.refractions.udig.catalog.neo4j.Activator;
 import net.refractions.udig.mapgraphic.MapGraphic;
 import net.refractions.udig.mapgraphic.MapGraphicContext;
 import net.refractions.udig.project.IBlackboard;
@@ -16,6 +15,8 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Point;
+
+import eu.udig.catalog.neo4j.Activator;
 
 
 /**

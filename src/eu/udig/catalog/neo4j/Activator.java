@@ -1,7 +1,7 @@
 /**
  * 
  */
-package net.refractions.udig.catalog.neo4j;
+package eu.udig.catalog.neo4j;
 
 import java.io.File;
 import java.io.IOException;

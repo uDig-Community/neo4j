@@ -1,4 +1,4 @@
-package net.refractions.udig.catalog.neo4j.findpath;
+package eu.udig.catalog.neo4j.findpath;
 
 
 /**

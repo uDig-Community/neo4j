@@ -1,4 +1,4 @@
-package net.refractions.udig.catalog.neo4j.shpwizard;
+package eu.udig.catalog.neo4j.shpwizard;
 
 import java.io.File;
 

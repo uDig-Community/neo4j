@@ -1,13 +1,11 @@
 /**
  * 
  */
-package net.refractions.udig.catalog.neo4j.findpath;
+package eu.udig.catalog.neo4j.findpath;
 
 import java.util.Iterator;
 import java.util.List;
 
-import net.refractions.udig.catalog.neo4j.Activator;
-import net.refractions.udig.catalog.neo4j.Neo4jSpatialGeoResource;
 import net.refractions.udig.ui.operations.IOp;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -23,6 +21,9 @@ import org.neo4j.gis.spatial.SpatialDatabaseService;
 import org.neo4j.gis.spatial.geotools.data.Neo4jSpatialDataStore;
 import org.neo4j.gis.spatial.query.SearchAll;
 import org.neo4j.graphdb.Transaction;
+
+import eu.udig.catalog.neo4j.Activator;
+import eu.udig.catalog.neo4j.Neo4jSpatialGeoResource;
 
 
 /**

@@ -1,9 +1,7 @@
-package net.refractions.udig.catalog.neo4j.findpath;
+package eu.udig.catalog.neo4j.findpath;
 
 import java.util.ArrayList;
 
-import net.refractions.udig.catalog.neo4j.Activator;
-import net.refractions.udig.catalog.neo4j.Neo4jSpatialService;
 import net.refractions.udig.project.IBlackboard;
 import net.refractions.udig.project.ILayer;
 import net.refractions.udig.project.ui.render.displayAdapter.MapMouseEvent;
@@ -23,6 +21,9 @@ import org.neo4j.graphdb.Transaction;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
+
+import eu.udig.catalog.neo4j.Activator;
+import eu.udig.catalog.neo4j.Neo4jSpatialService;
 
 
 /**

@@ -1,4 +1,4 @@
-package net.refractions.udig.catalog.neo4j.shpwizard;
+package eu.udig.catalog.neo4j.shpwizard;
 
 import java.io.File;
 import java.io.Serializable;
@@ -8,8 +8,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import net.refractions.udig.catalog.URLUtils;
-import net.refractions.udig.catalog.neo4j.Activator;
-import net.refractions.udig.catalog.neo4j.ProgressMonitorWrapper;
 import net.refractions.udig.ui.ExceptionDetailsDialog;
 import net.refractions.udig.ui.PlatformGIS;
 
@@ -25,6 +23,9 @@ import org.eclipse.ui.IWorkbench;
 import org.neo4j.gis.spatial.ShapefileImporter;
 import org.neo4j.gis.spatial.geotools.data.Neo4jSpatialDataStore;
 import org.neo4j.gis.spatial.geotools.data.Neo4jSpatialDataStoreFactory;
+
+import eu.udig.catalog.neo4j.Activator;
+import eu.udig.catalog.neo4j.ProgressMonitorWrapper;
 
 
 /**

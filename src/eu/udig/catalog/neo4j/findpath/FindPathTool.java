@@ -1,11 +1,9 @@
-package net.refractions.udig.catalog.neo4j.findpath;
+package eu.udig.catalog.neo4j.findpath;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.refractions.udig.catalog.neo4j.Activator;
-import net.refractions.udig.catalog.neo4j.Neo4jSpatialService;
 import net.refractions.udig.project.IBlackboard;
 import net.refractions.udig.project.ILayer;
 import net.refractions.udig.project.ui.tool.AbstractActionTool;
@@ -28,6 +26,9 @@ import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.Transaction;
+
+import eu.udig.catalog.neo4j.Activator;
+import eu.udig.catalog.neo4j.Neo4jSpatialService;
 
 
 /**

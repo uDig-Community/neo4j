@@ -1,4 +1,4 @@
-package net.refractions.udig.catalog.neo4j;
+package eu.udig.catalog.neo4j;
 
 import net.refractions.udig.catalog.IServiceInfo;
 
