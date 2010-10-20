@@ -99,8 +99,7 @@ public class Neo4jSpatialGeoResource extends IGeoResource {
     }
 
     public Style style(IProgressMonitor monitor) {
-    	// don't return a style
-        return null;
+        return parent.getDataStore(monitor).getStyle(typename);
     }
 
     public Neo4jSpatialService service() {
