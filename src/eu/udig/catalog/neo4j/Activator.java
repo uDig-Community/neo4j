@@ -168,12 +168,13 @@ public class Activator extends AbstractUIPlugin implements IStartup {
         	try {
 	        	File dir = new File(path);
 	        	if(dir.exists() && dir.isDirectory()) {
-		            for(String subdir: new String[]{"dev/neo4j","neo4j",".amanzi","workspace"}) {
+		            for(String subdir: new String[]{"dev/neo4j","neo4j","workspace"}) {
 		            	findDbDirs(dbDirs, new File(dir.getCanonicalFile(),subdir), 0);
 		            }
 	        	}
         	}catch(Exception e){
         		System.err.println("Failed to perform search at '" + path + "': "+e);
+        		e.printStackTrace();
         	}
         }
         if(dbDirs.size()>0){
@@ -196,9 +197,9 @@ public class Activator extends AbstractUIPlugin implements IStartup {
     }
     
     private void findDbDirs(HashSet<File> dbDirs, File dir, int depth) {
-    	if(depth > 4) return;
+    	if(depth > 6) return;
     	String[] files = dir.list();
-    	if(files.length > 50) return;
+    	if(files == null  || files.length > 50) return;
        	for(String file:files){
     		if(file.startsWith("neostore")){
     			System.out.println("Found Neo4j Database at: "+dir);
