@@ -10,20 +10,22 @@ import org.neo4j.gis.spatial.Listener;
  * manage an Eclipse IProgressMonitor implementation.
  * 
  * @author Davide Savazzi
+ * @author Craig Taverner
  */
 public class ProgressMonitorWrapper implements Listener {
+	private String taskName;
+	private IProgressMonitor monitor;
 
-	// Constructor
-	
 	public ProgressMonitorWrapper(String taskName, IProgressMonitor monitor) {
 		if (monitor == null) monitor = new NullProgressMonitor();
 		
 		this.taskName = taskName;
 		this.monitor = monitor;
 	}
-
 	
-	// Public methods
+	public void setTaskName(String name) {
+		this.taskName = name;
+	}
 	
 	public void begin(int unitsOfWork) {
 		monitor.beginTask(taskName, unitsOfWork);
@@ -36,15 +38,5 @@ public class ProgressMonitorWrapper implements Listener {
 	public void done() {
 		monitor.done();
 	}
-
-	public int suggestedCommitInterval() {
-		return 1000;
-	}
 	
-	
-	// Attributes
-	
-	private String taskName;
-	private IProgressMonitor monitor;
-
 }
