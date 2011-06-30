@@ -89,7 +89,8 @@ public class Neo4jSpatialService extends IService {
      */
     public void refresh(IProgressMonitor monitor) {
 		Neo4jSpatialDataStore dataStore = (Neo4jSpatialDataStore) getDataStore(monitor);
-		dataStore.clearCache();    	
+		if (dataStore != null)
+			dataStore.clearCache();
 		resources = null;
 		
 		// TODO compare old and new resources and

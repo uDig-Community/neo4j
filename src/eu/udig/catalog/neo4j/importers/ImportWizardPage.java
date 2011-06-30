@@ -1,4 +1,4 @@
-package eu.udig.catalog.neo4j.shpwizard;
+package eu.udig.catalog.neo4j.importers;
 
 import java.io.File;
 
@@ -14,31 +14,53 @@ import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Text;
+import org.neo4j.gis.spatial.geotools.data.Neo4jSpatialDataStore;
+import org.neo4j.graphdb.GraphDatabaseService;
+import org.neo4j.kernel.EmbeddedGraphDatabase;
 
 
 /**
  * @author Davide Savazzi
+ * @author Craig Taverner
  */
-public class ShpImportWizardPage extends WizardPage {
-
-
-    // Constructor
+public class ImportWizardPage extends WizardPage {
+	private String fileType;
+	private String typeName;
+	private String[] extensions;
+    private File neo4jDir = null;
+    private String neo4jDirPath = null;
     
-    public ShpImportWizardPage() {
-        super(ID);
-        setTitle("SHP to Neo4j import");
-        setDescription("Import a SHP file to a Neo4j Database");
-    }
+    private File selectedFile = null;
+    private String fileName = null;
+    
+    private Text layerNameField = null;
+    private String layerName = null;
+    
+//    public static final String ID = "Neo4jImportWizardPage";
 
-    
-    // Public methods
-    
-    public void createControl(Composite parent) {
+	public ImportWizardPage(String fileType, String typeName, String[] extensions) {
+		super(fileType + "Neo4jImportWizardPage");
+		this.fileType = fileType;
+		this.typeName = typeName;
+		this.extensions = extensions;
+		setTitle("Import " + this.fileType + " to Neo4j");
+		setDescription("Import a " + this.typeName + " to a Neo4j Database");
+	}
+
+	public String getFileType() {
+		return fileType;
+	}
+
+	public String getTypeName() {
+		return typeName;
+	}
+
+	public void createControl(Composite parent) {
         Composite area = new Composite(parent, SWT.NONE);
         area.setLayout(new GridLayout());
         
         Group dirInputGroup = createGroup(area, "Neo4j Database Directory");
-        final Text dirText = createTextField(dirInputGroup);
+        final Text dirText = createTextField(dirInputGroup, neo4jDirPath);
         dirText.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
 				setNeo4jDir(dirText.getText());
@@ -54,11 +76,11 @@ public class ShpImportWizardPage extends WizardPage {
             }
         });
         
-        Group fileInputGroup = createGroup(area, "SHP file");
-	    final Text fileText = createTextField(fileInputGroup);
+        Group fileInputGroup = createGroup(area, typeName);
+	    final Text fileText = createTextField(fileInputGroup, "");
 	    fileText.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
-				setShpFile(fileText.getText());
+				setSelectedFile(fileText.getText());
 			}});
 	    final Button fileButton = new Button(fileInputGroup, SWT.PUSH);
 	    fileButton.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
@@ -66,14 +88,14 @@ public class ShpImportWizardPage extends WizardPage {
 	    fileButton.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
 	    	public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
 	    		FileDialog fileDialog = new FileDialog(fileButton.getShell(), SWT.OPEN);
-	            fileDialog.setFilterExtensions(new String[] { "*.shp", "*.SHP" });
+	            fileDialog.setFilterExtensions(extensions);
 	            String path = fileDialog.open();
 	            fileText.setText(path);
 	        }
 	    });
 	    
         Group layerInputGroup = createGroup(area, "Layer name");
-	    layerNameField = createTextField(layerInputGroup);
+	    layerNameField = createTextField(layerInputGroup, "");
 	    
         setControl(area);
     }
@@ -90,21 +112,21 @@ public class ShpImportWizardPage extends WizardPage {
     	return layerName;
     }
     
-    public String getShpFile() {
-        return shpFilePath;
+    public String getFilename() {
+        return fileName;
     }
     
-    private void setShpFile(String path) {
-        shpFile = null;
-        shpFilePath = null;
+    private void setSelectedFile(String path) {
+        selectedFile = null;
+        fileName = null;
     	
         if (path != null) {
         	File f = new File(path);
             if (f.exists()) {
-                shpFile = f;
-                shpFilePath = path;
+                selectedFile = f;
+                fileName = path;
                 
-                String layerName = shpFilePath;
+                String layerName = fileName;
                 layerName = layerName.substring(0, layerName.lastIndexOf("."));
     	        layerName = layerName.substring(layerName.lastIndexOf(File.separator) + 1);
     	        layerNameField.setText(layerName);
@@ -127,7 +149,7 @@ public class ShpImportWizardPage extends WizardPage {
             if (f.exists()) {
             	neo4jDir = f;
             	neo4jDirPath = path;
-            } 
+            }
         }    	
         
     	checkFinish();
@@ -144,41 +166,34 @@ public class ShpImportWizardPage extends WizardPage {
     	return group;
     }
     
-    private Text createTextField(Group group) {
+    private Text createTextField(Group group, String value) {
 	    Text text = new Text(group, SWT.SINGLE | SWT.LEAD | SWT.BORDER);
 	    text.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-	    text.setText("");    	
+	    text.setText(value == null ? "" : value);
 	    return text;
     }
     
     private void checkFinish() {
-    	getShpImportWizard().disableFinishButton();
-        if (isReadable(shpFile) && shpFile.isFile() && 
+    	this.setPageComplete(false); // disables finish button
+    	//getShpImportWizard().disableFinishButton();
+        if (isReadable(selectedFile) && selectedFile.isFile() && 
         		isReadable(neo4jDir) && neo4jDir.isDirectory() && neo4jDir.canWrite()) {
-        	getShpImportWizard().enableFinishButton();
+        	this.setPageComplete(true); // enables finish button
+        	//getShpImportWizard().enableFinishButton();
         }
-        getWizard().getContainer().updateButtons();
+		if (getWizard() != null)
+			getWizard().getContainer().updateButtons();
     }
 
-    private ShpImportWizard getShpImportWizard() {
-    	return (ShpImportWizard) getWizard();
-    }
+//    private ShpImportWizard getShpImportWizard() {
+//    	return (ShpImportWizard) getWizard();
+//    }
     
     private boolean isReadable(File file) {
 		return file != null && file.exists() && file.canRead();
     }
-    
-    
-    // Attributes
 
-    private File neo4jDir = null;
-    private String neo4jDirPath = null;
-    
-    private File shpFile = null;
-    private String shpFilePath = null;
-    
-    private Text layerNameField = null;
-    private String layerName = null;
-    
-    public static final String ID = "Neo4jShpImportWizardPage";
+	public void setDatabase(Neo4jSpatialDataStore dataStore) {
+		setNeo4jDir(((EmbeddedGraphDatabase)dataStore.getSpatialDatabaseService().getDatabase()).getStoreDir());
+	}
 }

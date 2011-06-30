@@ -67,6 +67,7 @@ public class Activator extends AbstractUIPlugin implements IStartup {
 	    			
 	        		log("Opened Neo4j Database: " + id);
 				}
+				ensureCatalogHasDatabaseDir(new File(id));
 				return dataStore;
     		}
 		} else {
@@ -163,38 +164,42 @@ public class Activator extends AbstractUIPlugin implements IStartup {
     }
 
 	private void ensureDefaultDatabasesLoaded() {
-        HashSet<File> dbDirs = new HashSet<File>();
-        for(String path: new String[]{".",System.getenv("HOME")}) {
-        	try {
-	        	File dir = new File(path);
-	        	if(dir.exists() && dir.isDirectory()) {
-		            for(String subdir: new String[]{"dev/neo4j","neo4j","workspace"}) {
-		            	findDbDirs(dbDirs, new File(dir.getCanonicalFile(),subdir), 0);
-		            }
-	        	}
-        	}catch(Exception e){
-        		System.err.println("Failed to perform search at '" + path + "': "+e);
-        		e.printStackTrace();
-        	}
-        }
-        if(dbDirs.size()>0){
-    	    ICatalog catalog = CatalogPlugin.getDefault().getLocalCatalog();
-            IServiceFactory serviceFactory = CatalogPlugin.getDefault().getServiceFactory();
-	        for(File dir:dbDirs){
-	        	try {
-	                URL url = new File(dir,"neostore.id").toURI().toURL();
-	                System.out.println("Searching for service for "+url);
-	                for(IService service:serviceFactory.createService(url)){
-	                	System.out.println("Found service: "+service);
-                		catalog.add(service);
-	                }
-                } catch (MalformedURLException e) {
-                	System.err.println("Failed to find service for "+dir);
-	                e.printStackTrace();
-                }
-	        }
-        }
-    }
+		HashSet<File> dbDirs = new HashSet<File>();
+		for (String path : new String[] { ".", System.getenv("HOME") }) {
+			try {
+				File dir = new File(path);
+				if (dir.exists() && dir.isDirectory()) {
+					for (String subdir : new String[] { "dev/neo4j", "neo4j", "workspace" }) {
+						findDbDirs(dbDirs, new File(dir.getCanonicalFile(), subdir), 0);
+					}
+				}
+			} catch (Exception e) {
+				System.err.println("Failed to perform search at '" + path + "': " + e);
+				e.printStackTrace();
+			}
+		}
+		for (File dir : dbDirs) {
+			ensureCatalogHasDatabaseDir(dir);
+		}
+	}
+	
+	private void ensureCatalogHasDatabaseDir(File dir) {
+		ICatalog catalog = CatalogPlugin.getDefault().getLocalCatalog();
+		try {
+			URL url = new File(dir, "neostore.id").toURI().toURL();
+			System.out.println("Searching for service for " + url);
+			if (catalog.find(url, null).isEmpty()) {
+				IServiceFactory serviceFactory = CatalogPlugin.getDefault().getServiceFactory();
+				for (IService service : serviceFactory.createService(url)) {
+					System.out.println("Found service: " + service);
+					catalog.add(service);
+				}
+			}
+		} catch (MalformedURLException e) {
+			System.err.println("Failed to find service for " + dir);
+			e.printStackTrace();
+		}
+	}
     
     private void findDbDirs(HashSet<File> dbDirs, File dir, int depth) {
     	if(depth > 6) return;

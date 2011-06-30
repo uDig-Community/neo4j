@@ -18,10 +18,22 @@
    <extension
          point="org.eclipse.ui.importWizards">
       <wizard
-            class="eu.udig.catalog.neo4j.shpwizard.ShpImportWizard"
-            icon="icons/obj16/worldimage_obj.gif"
+            category="Neo4j Importers"
+            class="eu.udig.catalog.neo4j.importers.ShpImportWizard"
+            icon="icons/etool16/path.png"
             id="eu.udig.catalog.neo4j.shpwizard"
             name="Import a SHP file to a Neo4j Database">
+      </wizard>
+      <category
+            id="eu.udig.catalog.neo4j"
+            name="Neo4j Importers">
+      </category>
+      <wizard
+            category="Neo4j Importers"
+            class="eu.udig.catalog.neo4j.importers.OSMImportWizard"
+            icon="icons/etool16/graph.png"
+            id="eu.udig.catalog.neo4j.wizard1"
+            name="Import OSM data to Neo4j Database">
       </wizard>
    </extension>
    <extension
