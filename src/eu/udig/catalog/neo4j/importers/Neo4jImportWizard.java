@@ -1,11 +1,8 @@
 package eu.udig.catalog.neo4j.importers;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,29 +19,30 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
-import org.geotools.data.shapefile.shp.ShapefileException;
-import org.neo4j.gis.spatial.ShapefileImporter;
 import org.neo4j.gis.spatial.geotools.data.Neo4jSpatialDataStore;
 import org.neo4j.gis.spatial.geotools.data.Neo4jSpatialDataStoreFactory;
 
 import eu.udig.catalog.neo4j.Activator;
 import eu.udig.catalog.neo4j.Neo4jSpatialGeoResource;
 import eu.udig.catalog.neo4j.Neo4jSpatialService;
-import eu.udig.catalog.neo4j.ProgressMonitorWrapper;
-
 
 /**
- * Wizard to import a Shapefile in a Neo4j DataStore.
+ * Wizard to import a file in a Neo4j DataStore. This should be extended by
+ * classes specific to the import format, and they should implement the abstract
+ * method importFile(IProgressMonitor monitor, Neo4jSpatialDataStore dataStore,
+ * String filePath, String layerName) in order to process the format specific
+ * import.
  * 
  * @author Davide Savazzi
  * @author Craig Taverner
  */
 public abstract class Neo4jImportWizard extends Wizard implements INewWizard {
-    private ImportWizardPage mainPage;
-    private static final String WIZ_GIF = "icons/shpwizard/worldimage_wiz.gif";
+	private ImportWizardPage mainPage;
+	private static final String WIZ_GIF = "icons/shpwizard/worldimage_wiz.gif";
 
-    protected void initialize(IWorkbench workbench, IStructuredSelection selection, String fileType, String name, String[] extensions) {
-        mainPage = new ImportWizardPage(fileType, name, extensions);
+	protected void initialize(IWorkbench workbench, IStructuredSelection selection, String fileType, String name,
+			String[] extensions) {
+		mainPage = new ImportWizardPage(fileType, name, extensions);
 		if (selection != null && !selection.isEmpty()) {
 			for (Object selected : selection.toList()) {
 				if (selected instanceof Neo4jSpatialService) {
@@ -55,55 +53,59 @@ public abstract class Neo4jImportWizard extends Wizard implements INewWizard {
 				}
 			}
 		}
-        setWindowTitle(mainPage.getTitle());
-        ImageRegistry imageRegistry = Activator.getDefault().getImageRegistry();
-        
-        ImageDescriptor banner = imageRegistry.getDescriptor(WIZ_GIF);
-        if (banner == null) {
-//        	URL bannerURL = Activator.getDefault().getBundle().getEntry(WIZ_GIF);        
-//        	banner = ImageDescriptor.createFromURL(bannerURL);
-//            imageRegistry.put(WIZ_GIF, banner);
-        }
-        setDefaultPageImageDescriptor(banner);
-        
-        setNeedsProgressMonitor(true);
-    }
+		setWindowTitle(mainPage.getTitle());
+		ImageRegistry imageRegistry = Activator.getDefault().getImageRegistry();
 
-    public void addPages() {
-        super.addPages();
-        addPage(mainPage);
-    }
+		ImageDescriptor banner = imageRegistry.getDescriptor(WIZ_GIF);
+		if (banner == null) {
+			// URL bannerURL =
+			// Activator.getDefault().getBundle().getEntry(WIZ_GIF);
+			// banner = ImageDescriptor.createFromURL(bannerURL);
+			// imageRegistry.put(WIZ_GIF, banner);
+		}
+		setDefaultPageImageDescriptor(banner);
 
-    /**
-     * This is the main method format specific importing wizards need to implement
-     * @param monitor
-     * @param dataStore
-     * @param filePath
-     * @param layerName
-     * @throws Exception
-     */
-    protected abstract void importFile(IProgressMonitor monitor, Neo4jSpatialDataStore dataStore, String filePath, String layerName) throws Exception;
+		setNeedsProgressMonitor(true);
+	}
 
-    public boolean performFinish() {
-        // run with backgroundable progress monitoring
-        IRunnableWithProgress operation = new IRunnableWithProgress() {
-            public void run(final IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-    	        String filePath = mainPage.getFilename();
-    	        
-    	        // remove extension
-//    			filePath = filePath.substring(0, filePath.lastIndexOf("."));
-    	        
-    	        String layerName = mainPage.getLayerName();
-    	        if (layerName == null || layerName.trim().equals("")) {
-    	        	layerName = filePath.substring(filePath.lastIndexOf(File.separator) + 1);
-    	        }
-           	
-    	        String neo4jPath = mainPage.getNeo4jDir();
-    	        if (!neo4jPath.endsWith(File.separator)) {
-    	        	neo4jPath += File.separator;
-    	        }
-    	        neo4jPath += "neostore.id";
-    	    
+	public void addPages() {
+		super.addPages();
+		addPage(mainPage);
+	}
+
+	/**
+	 * This is the main method format specific importing wizards need to
+	 * implement
+	 * 
+	 * @param monitor
+	 * @param dataStore
+	 * @param filePath
+	 * @param layerName
+	 * @throws Exception
+	 */
+	protected abstract void importFile(IProgressMonitor monitor, Neo4jSpatialDataStore dataStore, String filePath, String layerName)
+			throws Exception;
+
+	public boolean performFinish() {
+		// run with backgroundable progress monitoring
+		IRunnableWithProgress operation = new IRunnableWithProgress() {
+			public void run(final IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+				String filePath = mainPage.getFilename();
+
+				// remove extension
+				// filePath = filePath.substring(0, filePath.lastIndexOf("."));
+
+				String layerName = mainPage.getLayerName();
+				if (layerName == null || layerName.trim().equals("")) {
+					layerName = filePath.substring(filePath.lastIndexOf(File.separator) + 1);
+				}
+
+				String neo4jPath = mainPage.getNeo4jDir();
+				if (!neo4jPath.endsWith(File.separator)) {
+					neo4jPath += File.separator;
+				}
+				neo4jPath += "neostore.id";
+
 				try {
 					Map<String, Serializable> params = new HashMap<String, Serializable>();
 					params.put(Neo4jSpatialDataStoreFactory.URLP.key, URLUtils.fileToURL(new File(neo4jPath)));
@@ -113,10 +115,10 @@ public abstract class Neo4jImportWizard extends Wizard implements INewWizard {
 					String message = "An error occurred while reading the " + mainPage.getTypeName();
 					ExceptionDetailsDialog.openError(null, message, IStatus.ERROR, Activator.ID, e);
 				}
-            }
-        };
+			}
+		};
 		PlatformGIS.runInProgressDialog("Importing a " + mainPage.getTypeName() + " to a Neo4j Database", true, operation, true);
-        return true;
-    }
-    
+		return true;
+	}
+
 }
